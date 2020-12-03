@@ -95,7 +95,7 @@ public class DefaultCompositeApiClient extends AbstractClientBase implements Com
 
     public void submitCompositeRaw(
             final InputStream raw, final Map<String, List<String>> headers,
-            final ResponseCallback<String> callback)
+            final ResponseCallback<InputStream> callback)
             throws SalesforceException {
         checkCompositeFormat(format, SObjectComposite.REQUIRED_PAYLOAD_FORMAT);
 
@@ -109,7 +109,7 @@ public class DefaultCompositeApiClient extends AbstractClientBase implements Com
         doHttpRequest(post, new ClientResponseCallback() {
             @Override
             public void onResponse(InputStream response, Map<String, String> headers, SalesforceException ex) {
-                // nothing to do, just pass through
+                callback.onResponse(Optional.of(response), headers, ex);
             }
         });
     }

@@ -131,7 +131,7 @@ public final class CompositeApiProcessor extends AbstractSalesforceProcessor {
     }
 
     void processCompositeResponseRaw(
-            final Exchange exchange, final Optional<String> responseBody, final Map<String, String> headers,
+            final Exchange exchange, final Optional<InputStream> responseBody, final Map<String, String> headers,
             final SalesforceException exception, final AsyncCallback callback) {
         try {
             if (!responseBody.isPresent()) {
@@ -141,7 +141,7 @@ public final class CompositeApiProcessor extends AbstractSalesforceProcessor {
                 final Message out = exchange.getOut();
 
                 System.out.println("Body: " + responseBody.get());
-                final String response = responseBody.get();
+                final InputStream response = responseBody.get();
 
                 out.copyFromWithNewBody(in, response);
                 out.getHeaders().putAll(headers);
