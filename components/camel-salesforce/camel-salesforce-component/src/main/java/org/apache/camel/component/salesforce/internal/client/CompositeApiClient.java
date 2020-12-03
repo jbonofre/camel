@@ -16,6 +16,7 @@
  */
 package org.apache.camel.component.salesforce.internal.client;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +42,9 @@ public interface CompositeApiClient {
     public interface ResponseCallback<T> {
         void onResponse(Optional<T> body, Map<String, String> headers, SalesforceException exception);
     }
+
+    void submitCompositeRaw(InputStream raw, Map<String, List<String>> headers, ResponseCallback<String> callback)
+            throws SalesforceException;
 
     void submitComposite(
             SObjectComposite composite, Map<String, List<String>> headers, ResponseCallback<SObjectCompositeResponse> callback)

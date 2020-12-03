@@ -93,6 +93,27 @@ public class DefaultCompositeApiClient extends AbstractClientBase implements Com
         xStreamCompositeTree.alias("SObjectTreeResponse", SObjectTreeResponse.class);
     }
 
+    public void submitCompositeRaw(
+            final InputStream raw, final Map<String, List<String>> headers,
+            final ResponseCallback<String> callback)
+            throws SalesforceException {
+        checkCompositeFormat(format, SObjectComposite.REQUIRED_PAYLOAD_FORMAT);
+
+        final String url = versionUrl() + "composite";
+
+        final Request post = createRequest(HttpMethod.POST, url, headers);
+
+        final ContentProvider content = new InputStreamContentProvider(raw);
+        post.content(content);
+
+        doHttpRequest(post, new ClientResponseCallback() {
+            @Override
+            public void onResponse(InputStream response, Map<String, String> headers, SalesforceException ex) {
+                // nothing to do, just pass through
+            }
+        });
+    }
+
     @Override
     public void submitComposite(
             final SObjectComposite composite, final Map<String, List<String>> headers,
