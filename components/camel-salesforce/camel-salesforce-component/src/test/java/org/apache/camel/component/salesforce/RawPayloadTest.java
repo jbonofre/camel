@@ -231,7 +231,8 @@ public class RawPayloadTest extends AbstractSalesforceTestBase {
 
                 // testComposite
                 from("direct:composite").to(
-                        "salesforce:composite?rawPayload=true&format=" + format);
+                        "salesforce:composite?rawPayload=true&format=" + format
+                                            + "&sObjectName=foo&sObjectIdName=bar&compositeMethod=PATCH");
             }
         };
     }

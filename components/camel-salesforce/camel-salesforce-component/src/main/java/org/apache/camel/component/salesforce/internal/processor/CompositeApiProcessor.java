@@ -91,7 +91,7 @@ public final class CompositeApiProcessor extends AbstractSalesforceProcessor {
                             this::processCompositeBatchResponse, callback);
                 case COMPOSITE:
                     if (rawPayload) {
-                        return processInternal(InputStream.class, exchange, compositeClient::submitCompositeRaw,
+                        return processRaw(exchange, compositeClient,
                                 this::processCompositeResponseRaw, callback);
                     } else {
                         return processInternal(SObjectComposite.class, exchange, compositeClient::submitComposite,
@@ -140,7 +140,6 @@ public final class CompositeApiProcessor extends AbstractSalesforceProcessor {
                 final Message in = exchange.getIn();
                 final Message out = exchange.getOut();
 
-                System.out.println("Body: " + responseBody.get());
                 final InputStream response = responseBody.get();
 
                 out.copyFromWithNewBody(in, response);
@@ -231,6 +230,31 @@ public final class CompositeApiProcessor extends AbstractSalesforceProcessor {
         clientOperation.submit(body, determineHeaders(exchange),
                 (response, responseHeaders, exception) -> responseHandler.handleResponse(exchange, response, responseHeaders,
                         exception, callback));
+
+        return false;
+    }
+
+    boolean processRaw(
+            final Exchange exchange, final CompositeApiClient compositeClient,
+            final ResponseHandler<InputStream> responseHandler, final AsyncCallback callback)
+            throws SalesforceException {
+        final InputStream body;
+
+        final Message in = exchange.getIn();
+        try {
+            body = in.getMandatoryBody(InputStream.class);
+        } catch (final InvalidPayloadException e) {
+            throw new SalesforceException(e);
+        }
+
+        String sObjectName = getParameter(SalesforceEndpointConfig.SOBJECT_NAME, exchange, IGNORE_BODY, NOT_OPTIONAL);
+        String extId = getParameter(SalesforceEndpointConfig.SOBJECT_EXT_ID_NAME, exchange, IGNORE_BODY, NOT_OPTIONAL);
+        String method = getParameter(SalesforceEndpointConfig.COMPOSITE_METHOD, exchange, IGNORE_BODY, NOT_OPTIONAL);
+
+        compositeClient.submitCompositeRaw(body, determineHeaders(exchange),
+                (response, responseHeaders, exception) -> responseHandler.handleResponse(exchange, response, responseHeaders,
+                        exception, callback),
+                sObjectName, extId, method);
 
         return false;
     }

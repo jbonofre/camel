@@ -43,7 +43,9 @@ public interface CompositeApiClient {
         void onResponse(Optional<T> body, Map<String, String> headers, SalesforceException exception);
     }
 
-    void submitCompositeRaw(InputStream raw, Map<String, List<String>> headers, ResponseCallback<InputStream> callback)
+    void submitCompositeRaw(
+            InputStream raw, Map<String, List<String>> headers, ResponseCallback<InputStream> callback,
+            String sObjectName, String extId, String method)
             throws SalesforceException;
 
     void submitComposite(
